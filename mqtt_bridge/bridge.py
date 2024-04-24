@@ -57,6 +57,8 @@ class RosToMqttBridge(Bridge):
             self._last_published = now
 
     def _publish(self, msg):
+        values = extract_values(msg)
+        #self.ros_node.get_logger().info(f"EXTRACT VALUES -- \nmsg:{msg}\nvalues:{values}\n---")
         payload = self._serialize(extract_values(msg))
         self._mqtt_client.publish(topic=self._topic_to, payload=payload)
 
@@ -101,6 +103,8 @@ class MqttToRosBridge(Bridge):
             msg_dict = self._deserialize(mqtt_msg.payload, raw=False)
         else:
             msg_dict = self._deserialize(mqtt_msg.payload)
+            
+        #self.ros_node.get_logger().info(f"--- POPULATE INSTANCE\nmsg_dict:\n{msg_dict}\n\nmsg_type:{self._msg_type()}\n\npopulate:\n{populate_instance(msg_dict, self._msg_type())}")
         return populate_instance(msg_dict, self._msg_type())
 
 
